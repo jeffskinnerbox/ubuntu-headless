@@ -405,7 +405,7 @@ Sources:
 >This makes it possible to use exactly the same system for development which you then create in production.
 
 ## Step 0: Purge Old Box
-If this isn't the first time you built this box and your rebuilding it,
+If this isn't the first time you built this box and your are rebuilding it,
 most likely you want to purge the old box.
 Your can do this as follows:
 

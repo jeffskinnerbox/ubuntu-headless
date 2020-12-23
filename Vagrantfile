@@ -117,25 +117,14 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # load firewall tool and utilities used by your bash shell
     apt-get -y install ufw
 
-    # software version control tools (need to load your tools)
+    # software version control tools (needed to load your tools)
     apt-get -y install git
 SHELL
 
-  # ------------ create your user GUI desktop environment (as root) ------------
+  # ------------------ create your user environment (as root) ------------------
   config.vm.provision "shell", name: "create your user desktop environment (as root)", run: "once", inline: <<-SHELL
     # install virtualbox guest tools giving you healthy screen resolution, integrated mouse, etc.
     apt-get -y install build-essential virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
-
-#    # install full desktop (login: vagrant / password: vagrant)
-    #add-apt-repository universe
-    #add-apt-repository multiverse
-    #apt-get -y install ubuntu-desktop
-    ##apt-get install unity
-
-    # install full version of GNOME desktop (login: vagrant / password: vagrant)
-    apt-get -y install ubuntu-desktop
-
-    # make sure to do 'shutdown -r now' as the last step, so this takes effect
 SHELL
 
 
