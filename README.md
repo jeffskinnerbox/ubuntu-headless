@@ -1,6 +1,6 @@
 <!--
 Maintainer:   jeffskinnerbox@yahoo.com / www.jeffskinnerbox.me
-Version:      0.0.1
+Version:      0.0.2
 -->
 
 
@@ -16,43 +16,6 @@ A headless computer is a computer system or device that has been configured to
 operate without a monitor (the missing "head"), keyboard, and mouse.
 A headless system is typically controlled over a network connection,
 just like a server, and is typically employed to reduce operating costs.
-
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
-# Vagrant Ubuntu GUI Desktop
-Vagrant is great because it allows us to test and run software within a virtual environment,
-using an [immutable infrastructure][08],
-and meanwhile keep our hosts operating environment clean of
-databases, libraries, and programming languages in different flavors and versions.
-
-But what if we want to use Vagrant to run software that needs a GUI?
-Specifically, what if your want to run in Ubuntu a X Windows GUI application in your host's window
-(aka [X Forwarding][01])?
-What if you want to run a full [Ubuntu desktop environment][02]?
-An of course I would want to cut & paste across the host and guest systems,
-access external devices via the hosts USB ports,
-and share files between the host & guest virtual machine.
-How can this be done?
-
-The `Vagrantfile` in this repository is just such an implementation
-and is a working example for [Ubuntu 16.04 using the Gnome Desktop][06].
-
-Ultimately, I want to creating Ubuntu Desktop [Vagrant base box][07].
-The implementation here isn't for a base box yet but it does have the Vagrantfile
-from which a base box could be created.
-Basically, this is the `Vagrantfile` to create a Vagrant virtual machine
-with a full Ubuntu GUI Desktop,
-along with X-Forwarding, cut & paste, USB port support,
-and disk file sharing.
-
-On top of this, I loaded up the virtual machine with all the basic development environment tools
-I like to have on hand for any work I would do.
-
-Sources:
-
-* [How to install a Full Desktop (GUI) on Ubuntu Server](https://www.youtube.com/watch?v=rWyWt3DR9Fs)
-* [Adding a GUI to a Debian Vagrant box](https://shanemcd.org/2018/12/16/adding-a-gui-to-a-debian-vagrant-box/)
-* [Using vagrant to run virtual machines with desktop environment](https://stackoverflow.com/questions/18878117/using-vagrant-to-run-virtual-machines-with-desktop-environment)
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
 
 ## Warning
 It's possible to run into a wide range of problems
@@ -101,41 +64,12 @@ sudo vagrant plugin install vagrant-vbguest
 After installed and you do the 'vagrant up' it will detect the version between host and guest. If version doesn't match then it update the guest additions version accordingly.
 
 
-
 ----
+
 
 # Key Supporting Features
 The section below covers some the key features within the Vagrantfile
 used to create this Headless Ubuntu virtual machine.
-
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
-### GNOME Desktop
-I was hoping to install the basic Gnome desktop environment, also known as the Vanilla desktop,
-you could do the following, but I [repeatedly ran into "purple screen" problem][12]:
-
-```bash
-# install vanilla GNOME desktop
-sudo apt-get install gnome-session
-
-# use the gdm3 login screen of Gnome desktop
-sudo update-alternatives --set gdm3.css /usr/share/gnome-shell/theme/Yaru/gnome-shell.css
-```
-
-So instead, I install the full GNOME desktop but did not use the [`tasksel`][11] command.
-In stead, I installed the desktop using `apt-get` and avoid the "purple screen"
-for guest virtual machine with ubuntu 18.04 but not ubuntu 19.10:
-
-```bash
-# install full version of GNOME desktop
-sudo apt-get install -y ubuntu-desktop
-```
-
-Sources
-
-* [Ubuntu Linux install Gnome desktop on server](https://www.cyberciti.biz/faq/ubuntu-linux-install-gnome-desktop-on-server/)
-* [How to install Gnome on Ubuntu 20.04 LTS Focal Fossa](https://linuxconfig.org/how-to-install-gnome-on-ubuntu-20-04-lts-focal-fossa)
-* [How to install Vanilla Gnome Desktop on Ubuntu](https://vitux.com/how-to-install-vanilla-gnome-desktop-on-ubuntu/)
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
 
 ### Vagrant Ubuntu X Forwarding
 The quickest and simplest thing to do to get a X Windows graphics program running
@@ -200,7 +134,7 @@ and run a X11 program on the Vagrant guest but displayed on the Vagrant host,
 as shown below:
 
 ```bash
-# make sure your in the relavent directory
+# make sure your in the relevant directory
 cd ~/src/vagrant-machines/jetson-dev
 
 # login to the guest VM via ssh with x forwarding
@@ -437,21 +371,12 @@ This makes it possible to use exactly the same system for development which you 
 ----
 
 
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
-# Building Vagrant Ubuntu GUI Desktop Base Box
-Vagrant base boxes are prepackaged environments that are the foundation of Vagrant
-and you typically find them at place like [Vagrant Cloud][18].
-In most cases, this is usually just a stripped and naked operating system such as Ubuntu.
-My mission here is to take just such a base box, add what is need to make it my
-Ubuntu GUI Desktop envirnment, and covert this into a new base box for my use.
-##################### REMOVE THE TEXT WITHIN THIS SECTION ######################
-
 # Building Vagrant Headless Ubuntu Base Box
 Vagrant base boxes are prepackaged environments that are the foundation of Vagrant
 and you typically find them at place like [Vagrant Cloud][18].
 In most cases, this is usually just a stripped and naked operating system such as Ubuntu.
 My mission here is to take just such a base box, add what is need to make it my
-Headless Ubuntu envirnment, and covert this into a new base box for my use.
+Headless Ubuntu environment, and covert this into a new base box for my use.
 
 Sources:
 
@@ -479,99 +404,32 @@ Sources:
 >You can use the same file and commands to build an image on AWS, Digital Ocean VirtualBox and Vagrant.
 >This makes it possible to use exactly the same system for development which you then create in production.
 
-
-
-
-############################# NOT NEEDED #######################################
-### Step X: Installing Packer
-Packer is likely to be the least fimilar of the required tools,
-so here is a short installation tutorial ([source][26]).
-Packer may be installed from a pre-compiled binary or from source.
-The easy and recommended method for all users is binary installation method.
-Check the latest release of Packer on the [Downloads page][19].
-Then download the recent version for your platform.
-In my case:
+## Step 0: Purge Old Box
+If this isn't the first time you built this box and your rebuilding it,
+most likely you want to purge the old box.
+Your can do this as follows:
 
 ```bash
-# download version 1.5.1  for ubuntu
-cd ~/tmp
-export VER="1.5.1"
-wget https://releases.hashicorp.com/packer/${VER}/packer_${VER}_linux_amd64.zip
+# list all your boxes
+$ vagrant box list
+lamp-stack      (virtualbox, 0)
+ubuntu-headless (virtualbox, 0)
+ubuntu/bionic64 (virtualbox, 20201211.1.0)
+ubuntu/focal64  (virtualbox, 20201117.0.0)
+windows10base   (virtualbox, 0)
 
-# uncompress the download file
-unzip packer_${VER}_linux_amd64.zip
+# delete your box you plan to rebuild
+vagrant box remove ubuntu-headless
 
-# move the packer binary into your path
-sudo mv packer /usr/local/bin
+# delete boxes used to build your target so latest boxes is pulled
+vagrant box remove ubuntu/focal64
 
-# verify the install is working
-$ packer --help
-Usage: packer [--version] [--help] <command> [<args>]
-
-Available commands are:
-    build       build image(s) from template
-    console     creates a console for testing variable interpolation
-    fix         fixes templates from old versions of packer
-    inspect     see components of a template
-    validate    check that a template is valid
-    version     Prints the Packer version
+# list all your boxes
+$ vagrant box list
+lamp-stack      (virtualbox, 0)
+ubuntu/bionic64 (virtualbox, 20201211.1.0)
+windows10base   (virtualbox, 0)
 ```
-
-Packer uses builders (sometimes called a template)
-to generate images and create machines for various platforms from templates.
-A builder is a configuration file used to define what image is built and its format is JSON.
-You can see a [full list of supported builders and their templates][22].
-A builder has the following three main parts.
-
-1. **variables** – Where you define custom variables.
-2. **builders** – Where you mention all the required builder parameters.
-3. **provisioners** – Where you can integrate a shell script,
-ansible play or a chef cookbook for configuring a required application.
-
-## Step 6: Build the Vagrant Box Using Packer
-Now, start the build process using Packer to create a Vagrant box:
-
-```bash
-# build the vagrant box using purchased physical version of ms windows 10 pro
-packer build --only=virtualbox-iso -var 'iso_url=./iso/windows-10-pro-020120.iso' -var 'iso_checksum=5a8969afcf5c49faf3d8f7f0bddfd5517453248dec47f125a61c93f538d08625' windows_10.json
-
-# OR - assuming you updated the script
-#./build_windows_10.sh
-```
-
-The building of the Windows 10 OS will take several hours (its Microsoft after all).
-You'll know when the Packer build is complete when the script terminate
-and trace messages  are no long printed.
-
->**NOTE:** Early in the boot-up of the VirtualBox,
->I get prompted for "Select the operating system you want to install"
->and a menu from the MS Windows install script.
->Appears there is a missing response in the
->`~/src/vagrant-machines/ms-windows/answer_files/10` file.
-
-## Step 7: Build the Vagrant Box
-Now that `packer` has completed building the box,
-next we want to make this box available for use by adding it to our list of available boxes.
-The follow commands adds the new box to the list of currently available boxes.
-
-```bash
-# install the vagrant box in your local repository
-#vagrant box add windows10base ./windows_10_virtualbox.box
-vagrant box add --name windows10base ./windows_10_virtualbox.box
-
-# check to see the box is in the local repository
-vagrant box list
-
-# remove the built box now that its in the repository
-rm windows_10_virtualbox.box
-```
-
-Now you have the box and you can use it like any other box
-by referencing it in a `Vagrantfile` for a new build.
-
-If you wise to remove the box from the local repository,
-use the command `vagrant box remove windows10base`.
-############################# NOT NEEDED #######################################
 
 ## Step 1: Build You Box Using Vagrant
 First step is to create your box destine to become your new base box via Vagrant.
@@ -603,7 +461,7 @@ cat /dev/null > ~/.bash_history && history -c
 sudo shutdown -h now
 ```
 
-## Step X: Repackage the VM into a New Vagrant Base Box
+## Step 2: Repackage the VM into a New Vagrant Base Box
 We are going to repackage the server we just created into a new Vagrant Base Box.
 
 ```bash
@@ -619,7 +477,7 @@ vagrant box list
 # remove the built box now that its in your local repository
 rm ubuntu-headless.box
 
-# your vm is nolong needed
+# your vm is no long needed
 vagrant destroy
 ```
 
@@ -629,7 +487,7 @@ by referencing it in a `Vagrantfile` for a new build.
 If you wise to remove the box from the local repository,
 use the command `vagrant box remove ubuntu-headless`.
 
-## Step X: Test the Build
+## Step 3: Test the Build
 Now lets test if the newly created Vagrant box in fact works.
 You can login into the VM using “vagrant” as user name and “vagrant” as a password,
 but first we need to initialize our test environment:
@@ -667,23 +525,3 @@ vagrant up
 [18]:https://app.vagrantup.com/boxes/search
 [19]:https://packer.io/downloads.html
 [20]:https://www.packer.io/intro/why.html
-[21]:
-[22]:
-[23]:
-[24]:
-[25]:
-[26]:
-[27]:
-[28]:
-[29]:
-[30]:
-[31]:
-[32]:
-[33]:
-[34]:
-[35]:
-[36]:
-[37]:
-[38]:
-[39]:
-[40]:
