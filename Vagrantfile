@@ -114,6 +114,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     apt-get -y install ntp
     timedatectl set-timezone America/New_York
 
+    # install the trash utility
+    apt-get -y install trash-cli
+
     # load firewall tool and utilities used by your bash shell
     apt-get -y install ufw
 
