@@ -9,17 +9,20 @@
 servers=[
   {
     :define => "headless ubuntu",
-    :hostname => "ubuntu-headless",
-    :box => "ubuntu/focal64",
-    :disk => "5GB",
+    :hostname => "ubuntu-headless",  # set hostname
+    :box => "ubuntu/focal64",        # ubuntu 20.04 guest vm
+    :disk => "50GB",
     :ram => 2048,
     :cpu => 1
   }
 ]
 
+# Vagrantfile API/syntax version.  The "2" is the Vagrant configuration version.
+VAGRANTFILE_API_VERSION = "2"
+
 Vagrant.require_version ">= 2.2.6"
 
-Vagrant.configure(2) do |config|
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     servers.each do |machine|
         config.vm.define machine[:define] do |node|
             # define the virtual machine
@@ -55,6 +58,31 @@ Vagrant.configure(2) do |config|
                     '--vendorid', '0x10c4',
                     '--productid', '0xea60']
             end
+
+            # avoid the updating of guest additions if the user has the plugin installed (any version)
+            # to update the plugin, use 'vagrant plugin update vagrant-vbguest'
+            if Vagrant.has_plugin?("vagrant-vbguest")
+                node.vbguest.auto_update = false
+            end
+
+            ## copy ssh key from the ansible control node to the ansible managed nodes
+            #node.vm.provision "shell", name: "copy ssh key from the ansible control (as root)", run: "once" do |s|
+                #ssh_pub_key = File.readlines("#{Dir.home}/.ssh/ansible.pub").first.strip
+                #s.inline = <<-SHELL
+                    #echo #{ssh_pub_key} >> /home/vagrant/.ssh/authorized_keys
+                    #echo #{ssh_pub_key} >> /root/.ssh/authorized_keys
+                #SHELL
+
+            ## create a forwarded port mapping which allows access to a specific port
+            #node.vm.network "forwarded_port", guest: 8888, host: 8888, host_ip: "127.0.0.1"  # port for jupyter notebook
+            #node.vm.network "forwarded_port", guest: 1880, host: 1880, host_ip: "127.0.0.1"  # port for node-red
+            #node.vm.network "forwarded_port", guest: 8086, host: 8086, host_ip: "127.0.0.1"  # port for influxdb
+            #node.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"  # port for grafana
+            #node.vm.network "forwarded_port", guest: 8765, host: 8765, host_ip: "127.0.0.1"  # port for motioneye
+            #node.vm.network "forwarded_port", guest: 8123, host: 8123, host_ip: "127.0.0.1"  # port for home assistant
+
+            ## configure virtual network (private network, using static ip)
+            #node.vm.network "private_network", ip: machine[:ip]            # static ip address
 
             # Create a public network, which generally matched to bridged network.
             # Bridged networks make the machine appear as another physical device on your network.

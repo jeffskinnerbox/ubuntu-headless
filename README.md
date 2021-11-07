@@ -445,6 +445,9 @@ We're also going to clean up disk space on the VM
 so when we package it into a new Vagrant box, it's as clean as possible.
 
 ```bash
+# ssh into the box
+vagrant ssh
+
 # do any required customization
 
 # remove APT cache
@@ -459,6 +462,9 @@ cat /dev/null > ~/.bash_history && history -c
 
 # shutdown the vm
 sudo shutdown -h now
+
+# check the status of the vm, make sure its powered off
+vagrant status
 ```
 
 ## Step 2: Repackage the VM into a New Vagrant Base Box
@@ -469,6 +475,7 @@ We are going to repackage the server we just created into a new Vagrant Base Box
 vagrant package --output ubuntu-headless.box
 
 # install the vagrant box in your local repository
+#vagrant box add --name ubuntu-headless --box-version $(date +%Y%m%d) ./ubuntu-headless.box
 vagrant box add --name ubuntu-headless ./ubuntu-headless.box
 
 # check to see the box is in the local repository
