@@ -10,7 +10,7 @@ servers=[
   {
     :define => "headless ubuntu",
     :hostname => "ubuntu-headless",  # set hostname
-    :box => "ubuntu/focal64",        # ubuntu 20.04 guest vm
+    :box => "ubuntu-headless",       # ubuntu 20.04 guest vm
     :disk => "50GB",
     :ram => 2048,
     :cpu => 1
